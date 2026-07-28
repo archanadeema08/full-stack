@@ -1,89 +1,95 @@
-// Display Blogs
+// --------------------
+// Add Blog
+// --------------------
+
+const blogForm = document.getElementById("blogForm");
+
+if (blogForm) {
+
+    blogForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const title = document.getElementById("title").value.trim();
+        const author = document.getElementById("author").value.trim();
+        const content = document.getElementById("content").value.trim();
+
+        if (title === "" || author === "" || content === "") {
+
+            alert("Please fill all fields.");
+
+            return;
+
+        }
+
+        const response = await fetch("/add-blog", {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type": "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+                title,
+
+                author,
+
+                content
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        alert(result.message);
+
+        blogForm.reset();
+
+    });
+
+}
+
+// --------------------
+// View Blogs
+// --------------------
+
+const blogList = document.getElementById("blogList");
+
+if (blogList) {
+
+    loadBlogs();
+
+}
 
 async function loadBlogs() {
-
-    const container = document.getElementById("blogContainer");
-
-    if (!container) return;
 
     const response = await fetch("/blogs");
 
     const blogs = await response.json();
 
-    container.innerHTML = "";
-
-    if (blogs.length === 0) {
-
-        container.innerHTML = "<p>No Blogs Available</p>";
-
-        return;
-    }
+    blogList.innerHTML = "";
 
     blogs.forEach(blog => {
 
-        container.innerHTML += `
+        blogList.innerHTML += `
 
         <div class="card">
 
-        <h3>${blog.title}</h3>
+            <h2>${blog.title}</h2>
 
-        <p><b>Author:</b> ${blog.author}</p>
+            <h4>Author : ${blog.author}</h4>
 
-        <p>${blog.content}</p>
+            <p>${blog.content}</p>
 
         </div>
 
         `;
 
     });
-
-}
-
-loadBlogs();
-
-
-// Add Blog
-
-const form = document.getElementById("blogForm");
-
-if (form) {
-
-form.addEventListener("submit", async function(e){
-
-e.preventDefault();
-
-const title = document.getElementById("title").value;
-
-const author = document.getElementById("author").value;
-
-const content = document.getElementById("content").value;
-
-await fetch("/add-blog",{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
-
-body:JSON.stringify({
-
-title,
-
-author,
-
-content
-
-})
-
-});
-
-alert("Blog Added Successfully!");
-
-window.location.href="index.html";
-
-});
 
 }
